@@ -1,0 +1,31 @@
+.home-dog-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.home-dog-image-container {
+  height: 80vh;
+  width: 100%;
+}
+
+.login-submit {
+  border-radius: 9px;
+  outline: none;
+  border: 2px solid transparent;
+  width: 100%;
+  color: #ffff;
+  text-align: center;
+  transition: 0.2s ease-in;
+}
+
+.login-submit:hover {
+  border: 2px solid #f36e6f;
+  color: black;
+  background-color: #ffff;
+}
+
+.signup {
+  text-decoration: underline;
+  cursor: pointer;
+}

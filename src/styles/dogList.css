@@ -1,0 +1,36 @@
+.dogCard {
+  border: 2px solid transparent;
+  /* box-sizing: border-box; */
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  width: 100%;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 30px;
+}
+
+.dogcard-image-container {
+  width: 100%;
+  height: 250px;
+  object-fit: contain;
+}
+
+.dogcard-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.dogcard-text {
+  background-color: #f36e6f;
+  color: #ffffff;
+  height: 50px;
+  width: 100%;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
