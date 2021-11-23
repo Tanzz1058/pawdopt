@@ -1,10 +1,15 @@
 import React from "react";
+import { useNavigate } from "react-router";
 
 import "../styles/dogList.css";
 
 const DogCard = () => {
+  const navigator = useNavigate();
   return (
-    <div className="col-lg-3 col-md-4 col-sm-12">
+    <div
+      className="col-lg-4 col-md-4 col-sm-12"
+      onClick={() => navigator("/pet-details")}
+    >
       <div className="dogCard">
         <div className="dogcard-image-container">
           <img src="/images/homeDog.jpg" alt="dog" />
