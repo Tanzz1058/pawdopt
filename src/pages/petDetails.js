@@ -39,7 +39,7 @@ const PetDetails = () => {
                 <div className="dog-description-outline text-center">
                   <h2 className="">About Bruno</h2>
                   <br />
-                  <p>By: Smile Founadtion, Karnataka, Bengluru</p>
+                  <p>By: Smile Foundation, Karnataka, Bengaluru</p>
                   <br />
                   <p>Breed: Golden Retriever</p>
                   <br />

@@ -15,7 +15,7 @@ const AdoptionForm = () => {
                 <FormLabel className="bold fs-4">Personal Details</FormLabel>
                 <div className="row">
                   <div className="col-6">
-                    <FormLabel>Fist Name</FormLabel>
+                    <FormLabel>First Name</FormLabel>
                     <FormControl type="text" placeholder="" className="mb-3 " />
                   </div>
                   <div className="col-6">
