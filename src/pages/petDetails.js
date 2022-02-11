@@ -5,9 +5,90 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import "../styles/petDetails.css";
 import { useNavigate } from "react-router";
+import { message } from "antd";
+import axios from "axios";
+const Razorpay = require("razorpay");
 
 const PetDetails = () => {
   const navigator = useNavigate();
+
+  const loadScript = (src) => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = () => {
+        resolve(true);
+      };
+      script.onerror = () => {
+        resolve(false);
+      };
+      document.body.appendChild(script);
+    });
+  };
+
+  const handlePaymentSuccess = () => {
+    message.success("Payment successful");
+  };
+
+  const showRazorpay = async () => {
+    const res = await loadScript(
+      "https://checkout.razorpay.com/v1/checkout.js"
+    );
+
+    if (!res) {
+      alert("Razorpay SDK failed to load. Are you online?");
+      return;
+    }
+
+    //     try {
+    //       const instance = new Razorpay({
+    //         key_id: process.env.REACT_APP_PUBLIC_KEY,
+    //         key_secret: process.env.REACT_APP_SECRET_KEY,
+    //       });
+
+    //       const options = {
+    //         amount: 50000, // amount in smallest currency unit
+    //         currency: "INR",
+    //         receipt: "receipt_order_74394",
+    //       };
+
+    //       var order = await instance.orders.create(options);
+    // console.log(order);
+    //       if (!order) alert("Some error occured");
+
+    //       // res.json(order);
+    //     } catch (error) {
+    //       // res.status(500).send(error);
+    //       console.log(error);
+    //     }
+
+    const options = {
+      key: process.env.REACT_APP_PUBLIC_KEY, // Enter the Key ID generated from the Dashboard
+      amount: 1000,
+      currency: "INR",
+      name: "Soumya Corp.",
+      description: "Test Transaction",
+      image: "",
+      order_id: "",
+      handler: async function (response) {
+        message.info("Success");
+      },
+      prefill: {
+        name: "Soumya Dey",
+        email: "SoumyaDey@example.com",
+        contact: "9999999999",
+      },
+      notes: {
+        address: "Soumya Dey Corporate Office",
+      },
+      theme: {
+        color: "#61dafb",
+      },
+    };
+
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
+  };
 
   return (
     <>
@@ -73,7 +154,6 @@ const PetDetails = () => {
                     <br /> New Malakpet, Karnataka, Bengaluru
                   </p>
                   <br />
-
                   <p>
                     <a className="details-link" href="tel:+91 9826 311996">
                       <i class="fa fa-phone pink" aria-hidden="true"></i>
@@ -96,12 +176,19 @@ const PetDetails = () => {
                   </button>
                   <br />
                   <br />
-
                   <button
                     className="theme-color-pink text-center p-2 col-12 align-items-center login-submit mb-3"
                     onClick={() => navigator("/findpets")}
                   >
                     Look for other dogs
+                  </button>
+                  <br />
+                  <br />
+                  <button
+                    className="theme-color-pink text-center p-2 col-12 align-items-center login-submit mb-3"
+                    onClick={() => showRazorpay()}
+                  >
+                    Donate
                   </button>
                 </div>
               </div>

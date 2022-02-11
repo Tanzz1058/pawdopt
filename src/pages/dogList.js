@@ -1,12 +1,48 @@
-import React from "react";
+import { message } from "antd";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { Dropdown, FormControl } from "react-bootstrap";
 import DogCard from "../components/dogCard";
 import Header from "../components/header";
+import Spinner from "../components/spinner";
 
 const DogList = () => {
+  const [list, setList] = useState([]);
+  const [pin, setPin] = useState("");
+  const [breed, setBreed] = useState("");
+  const [age, setAge] = useState("");
+  const [size, setSize] = useState("");
+  const [gender, setGender] = useState("");
+  const [load, setLoad] = useState(false);
+
+  useEffect(() => {
+    setLoad(true);
+    axios
+      .get(
+        `${process.env.REACT_APP_BASE_URL}/api/v1/pet_api/?breed=${breed}&age=${age}&size=${size}&gender=${gender}`
+      )
+      .then((res) => {
+        console.log(res.data);
+        setLoad(false);
+        setList(res.data);
+      })
+      .catch((e) => {
+        setLoad(false);
+        message.error("Something went wrong");
+      });
+  }, [breed, age, size, gender]);
   return (
     <>
       <Header />
+      {load ? (
+        <div className="spinner-container">
+          <div className="d-flex justify-content-center">
+            <Spinner size="large" show={true} />
+          </div>
+        </div>
+      ) : (
+        <></>
+      )}
       <div className="page_content">
         <div className="container">
           <div className="row">
@@ -110,15 +146,16 @@ const DogList = () => {
             </div>
             <div className="col-lg-8 col-md-12 col-sm-12">
               <div className="row d-flex flex-wrap">
-                <DogCard />
-                <DogCard />
-                <DogCard />
-                <DogCard />
-                <DogCard />
-                <DogCard />
-                <DogCard />
-                <DogCard />
-                <DogCard />
+                {list.length == 0 ? (
+                  <h1 className="text-center">No Results found</h1>
+                ) : (
+                  list.map((res) => (
+                    <DogCard
+                      name={res.name}
+                      // location={res.city}
+                    />
+                  ))
+                )}
               </div>
             </div>
           </div>

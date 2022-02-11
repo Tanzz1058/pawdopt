@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import Header from "../components/header";
 import { v4 as uuidv4 } from "uuid";
-import firebase from "../firebase";
 import { Dropdown, Form, FormControl, FormLabel } from "react-bootstrap";
 import {
   getStorage,
@@ -11,6 +10,7 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
+import axios from "axios";
 
 export default function PetInfoForm() {
   const [fileList, setFileList] = useState([]);
@@ -21,6 +21,17 @@ export default function PetInfoForm() {
   const [image2, setImage2] = useState("");
   const [image3, setImage3] = useState("");
   const [isRescued, setIsRescued] = useState(false);
+
+  const [name, setName] = useState("");
+  const [size, setSize] = useState("");
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState("");
+  const [breed, setBreed] = useState("");
+  const [breed2, setBreed2] = useState("");
+  const [story, setStory] = useState("");
+  const [color, setColor] = useState("");
+  const [vaccination, setVaccination] = useState(false);
+  const [fee, setFee] = useState(0);
 
   const dummyRequest = ({ file, onSuccess }) => {
     setTimeout(() => {
@@ -59,6 +70,7 @@ export default function PetInfoForm() {
       <div style={{ marginTop: 8 }}>Upload</div>
     </div>
   );
+
   const handlePreview = async (file) => {
     if (!file.url || !file.preview) {
       file.preview = await getBase64(file.originFileObj);
@@ -97,6 +109,8 @@ export default function PetInfoForm() {
               case "running":
                 console.log("Upload is running");
                 break;
+              default:
+                break;
             }
           },
           (error) => {
@@ -108,8 +122,10 @@ export default function PetInfoForm() {
                 console.log("wwwwwwwww");
                 break;
               case "storage/unknown":
-                message.error("An unknown error occured, please try later!")
+                message.error("An unknown error occured, please try later!");
                 console.log("hhhhhhhh");
+                break;
+              default:
                 break;
             }
           },
@@ -120,6 +136,61 @@ export default function PetInfoForm() {
           }
         );
       }
+    }
+  };
+
+  const sendPetInfo = (e) => {
+    e.preventDefault();
+    let formData = new FormData();
+    formData.append("name", name);
+    breed != "Others"
+      ? formData.append("breed", breed)
+      : formData.append("breed", breed2);
+    formData.append("gender", gender);
+    formData.append("color", color);
+    formData.append("age", age);
+    formData.append("size", size);
+    formData.append("vaccination", vaccination);
+    formData.append("adoption_fee", fee);
+    formData.append("first_image", image1.originFileObj);
+    image2 && formData.append("second_image", image2?.originFileObj);
+    image3 && formData.append("third_image", image3?.originFileObj);
+    console.log(formData);
+
+    if (!image1) {
+      message.error("Please upload atleast 1 photo");
+    } else if (!gender) {
+      message.error("Please specify the gender");
+    } else if (!age) {
+      message.error("Please specify the age");
+    } else if (!breed) {
+      message.error("Please specify the breed");
+    } else if (!age) {
+      message.error("Please specify the age");
+    } else if (!vaccination) {
+      message.error("Please specify the vaccination status");
+    } else {
+      axios
+        .post(process.env.REACT_APP_BASE_URL + "/api/v1pet_api/", formData, {
+          headers: {
+            Accept: "application/json, text/plain",
+            "Content-Type": `multipart/form-data;boundary=${formData._boundary}`,
+          },
+        })
+        .then((res) => {
+          setFileList([]);
+          setImage1("");
+          setImage2("");
+          setImage3("");
+          console.log(res);
+        })
+        .catch((e) => {
+          console.log(e.message);
+          setFileList([]);
+          setImage1("");
+          setImage2("");
+          setImage3("");
+        });
     }
   };
 
@@ -134,107 +205,210 @@ export default function PetInfoForm() {
               Please fill in this form carefully
             </h5>
             <div className="form-container">
-              <Form>
+              <Form onSubmit={(e) => sendPetInfo(e)}>
                 <FormLabel>Pet Name</FormLabel>
-                <FormControl type="text" placeholder="" className="mb-3 " />
-
-                <FormLabel>Age</FormLabel>
                 <FormControl
                   type="text"
                   placeholder=""
                   className="mb-3 "
-                  type="number"
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  value={name}
                 />
 
+                <FormLabel>Age (in yrs)</FormLabel>
+                <Form.Select
+                  aria-label="Select"
+                  className="theme-color-pink mb-3"
+                  onChange={(e) => setAge(e.target.value)}
+                  value={age}
+                >
+                  <option value="">Select</option>
+                  <option value="less than 1">less than 1</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                  <option value="13">13</option>
+                  <option value="14">14</option>
+                  <option value="15">15</option>
+                  <option value="more than 15">more than 15</option>
+                </Form.Select>
+
                 <FormLabel>Size</FormLabel>
-                <FormControl type="text" placeholder="" className="mb-3 " />
+                <Form.Select
+                  aria-label="Select"
+                  className="theme-color-pink mb-3"
+                  onChange={(e) => setSize(e.target.value)}
+                >
+                  <option value="">Select</option>
+                  <option value="Puppy">Puppy</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Large">Adult</option>
+                </Form.Select>
 
                 <FormLabel>Gender</FormLabel>
-                <Dropdown className="mb-3">
-                  <Dropdown.Toggle>Any</Dropdown.Toggle>
-                  <Dropdown.Menu className="filters-list-dropdown">
-                    <Dropdown.Item href="#/action-1" active>
-                      Male
-                    </Dropdown.Item>
-                    <Dropdown.Item href="#/action-2">Female</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
+                <Form.Select
+                  aria-label="Select"
+                  className="theme-color-pink mb-3"
+                  onChange={(e) => setGender(e.target.value)}
+                >
+                  <option value="">Select</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </Form.Select>
+
+                <FormLabel>Color Description</FormLabel>
+                <FormControl
+                  type="text"
+                  placeholder=""
+                  className="mb-3 "
+                  onChange={(e) => setColor(e.target.value)}
+                  required
+                />
 
                 <FormLabel>Breed</FormLabel>
-                <Dropdown className="mb-3">
-                  <Dropdown.Toggle>Any</Dropdown.Toggle>
-                  <Dropdown.Menu className="filters-list-dropdown">
-                    <Dropdown.Item href="#/action-1" active>
-                      Male
-                    </Dropdown.Item>
-                    <Dropdown.Item href="#/action-2">Female</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
+                <Form.Select
+                  aria-label="Select"
+                  className="theme-color-pink mb-3"
+                  onChange={(e) => setBreed(e.target.value)}
+                >
+                  <option value="">Select</option>
+                  <option value="Unknown">Unknown</option>
+                  <option value="Pug">Pug</option>
+                  <option value="Golden Retriever">Golden Retriever</option>
+                  <option value="German Shepherd">German Shepherd</option>
+                  <option value="Labrador">Labrador</option>
+                  <option value="American Bulldog">American Bulldog</option>
+                  <option value="Cocker Spaniel">Cocker Spaniel</option>
+                  <option value="Schitzu">Schitzu</option>
+                  <option value="German Shepherd">German Shepherd</option>
+                  <option value="Pomeranian">Pomeranian</option>
+                  <option value="Doberman">Doberman</option>
+                  <option value="Boxer">Boxer</option>
+                  <option value="Beagle">Beagle</option>
+                  <option value="Rottweiler">Rottweiler</option>
+                  <option value="Hound">Hound</option>
+                  <option value="Dalmatian">Dalmatian</option>
+                  <option value="Samoyed">Samoyed</option>
+                  <option value="St. Dermard">St. Dermard</option>
+                  <option value="Chihuahua">Chihuahua</option>
+                  <option value="Husky">Husky</option>
+                  <option value="Indian Pariah Dog">Indian Pariah Dog</option>
+                  <option value="Others">Others</option>
+                </Form.Select>
+
+                {breed == "Others" && (
+                  <>
+                    <FormLabel>Please Specify the breed</FormLabel>
+                    <FormControl
+                      type="text"
+                      placeholder=""
+                      className="mb-3 "
+                      onChange={(e) => setBreed2(e.target.value)}
+                      value={breed2}
+                    />
+                  </>
+                )}
+
+                <FormLabel>Vaccination status</FormLabel>
+                <Form.Select
+                  aria-label="Select"
+                  className="theme-color-pink mb-3"
+                  onChange={(e) => setVaccination(e.target.value)}
+                >
+                  <option value="">Select</option>
+                  <option value="Not vaccinated">Not vaccinated</option>
+                  <option value="Partially Vaccinated">
+                    Partially Vaccinated
+                  </option>
+                  <option value="Completely Vaccinated">
+                    Completely Vaccinated
+                  </option>
+                </Form.Select>
 
                 <FormLabel>Please upload photos of the pet (max. 3)</FormLabel>
-              </Form>
-              <>
-                <Upload
-                  //   className="mb-3"
-                  beforeUpload={(file) => {
-                    const isJPG =
-                      file.type === "image/jpeg" || file.type === "image/png";
-                    if (!isJPG) {
-                      message.error("You can only upload JPG or PNG file!");
-                      return false;
-                    } else {
-                      console.log(file);
-                      return true;
-                    }
-                  }}
-                  // action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                  customRequest={dummyRequest}
-                  listType="picture-card"
-                  fileList={fileList}
-                  onPreview={handlePreview}
-                  onChange={onChange}
-                >
-                  {fileList.length >= 3 ? null : uploadButton}
-                </Upload>
-                <Modal
-                  visible={previewVisible}
-                  title={previewTitle}
-                  footer={null}
-                  onCancel={handleCancel}
-                >
-                  <img
-                    alt="example"
-                    style={{ width: "100%" }}
-                    src={previewImage}
-                  />
-                </Modal>
-              </>
-              <FormLabel>Adoption fees (if any)</FormLabel>
-              <FormControl type="number" placeholder="" className="mb-3 " />
-
-              <Form.Check
-                className="mb-3 fs-5"
-                // type={type}
-                id={`default`}
-                label={`Is the pet rescued?`}
-                onChange={() => setIsRescued(!isRescued)}
-              />
-              {isRescued && (
                 <>
-                  <FormLabel>
-                    Would you like to share this pet's rescue story?
-                  </FormLabel>
-                  <Form.Control as="textarea" rows={3} className="mb-3 " />
+                  <Upload
+                    //   className="mb-3"
+                    beforeUpload={(file) => {
+                      const isJPG =
+                        file.type === "image/jpeg" || file.type === "image/png";
+                      if (!isJPG) {
+                        message.error("You can only upload JPG or PNG file!");
+                        return false;
+                      } else {
+                        console.log(file);
+                        return true;
+                      }
+                    }}
+                    // action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                    customRequest={dummyRequest}
+                    listType="picture-card"
+                    fileList={fileList}
+                    onPreview={handlePreview}
+                    onChange={onChange}
+                  >
+                    {fileList.length >= 3 ? null : uploadButton}
+                  </Upload>
+                  <Modal
+                    visible={previewVisible}
+                    title={previewTitle}
+                    footer={null}
+                    onCancel={handleCancel}
+                  >
+                    <img
+                      alt="example"
+                      style={{ width: "100%" }}
+                      src={previewImage}
+                    />
+                  </Modal>
                 </>
-              )}
+                <FormLabel>Adoption fees (if any)</FormLabel>
+                <FormControl
+                  type="number"
+                  placeholder=""
+                  className="mb-3 "
+                  onChange={(e) => setFee(e.target.value)}
+                  value={fee}
+                />
+
+                <Form.Check
+                  className="mb-3 fs-5"
+                  // type={type}
+                  id={`default`}
+                  label={`Is the pet rescued?`}
+                  onChange={() => setIsRescued(!isRescued)}
+                />
+                {isRescued && (
+                  <>
+                    <FormLabel>
+                      Would you like to share this pet's rescue story?
+                    </FormLabel>
+                    <Form.Control
+                      as="textarea"
+                      rows={3}
+                      className="mb-3 "
+                      onChange={(e) => setStory(e.target.value)}
+                    />
+                  </>
+                )}
+                <button
+                  className="theme-color-pink text-center p-2 col-12 align-items-center login-submit mb-3"
+                  type="submit"
+                  // onClick={() => uploadToFb()}
+                >
+                  Submit
+                </button>
+              </Form>
             </div>
-            <button
-              className="theme-color-pink text-center p-2 col-12 align-items-center login-submit mb-3"
-              type="submit"
-              onClick={() => uploadToFb()}
-            >
-              Submit
-            </button>
           </div>
         </div>
       </div>

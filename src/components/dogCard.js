@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 
 import "../styles/dogList.css";
 
-const DogCard = () => {
+const DogCard = (props) => {
   const navigator = useNavigate();
   return (
     <div
@@ -15,7 +15,7 @@ const DogCard = () => {
           <img src="/images/homeDog.jpg" alt="dog" />
         </div>
         <div className="row d-flex flex-column dogcard-text text-center">
-          <p className="mb-0">Dog name</p>
+          <p className="mb-0">{props.name}</p>
           <p className="mb-0">
             <i class="fa fa-map-marker" aria-hidden="true"></i> Location
           </p>

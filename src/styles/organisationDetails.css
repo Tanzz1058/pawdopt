@@ -1,0 +1,19 @@
+.org-detail-header {
+  border-radius: 15px;
+  background-color: #f36e6f;
+  padding: 12px 2px;
+  width: 80%;
+  text-align: center;
+}
+
+.org-detail-page {
+  margin-top: -25px;
+  padding: 12px;
+  width: 80%;
+  background: #fff 0% 0% no-repeat padding-box;
+  border-radius: 15px;
+}
+
+.input_err {
+  border: 2px solid red;
+}

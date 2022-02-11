@@ -9,6 +9,7 @@ import DogList from "./pages/dogList";
 import PetDetails from "./pages/petDetails";
 import AdoptionForm from "./pages/adoptionForm";
 import PetInfoForm from "./pages/petInfoForm";
+import OrganisationDetails from "./pages/organisationDetails";
 
 function App() {
   return (
@@ -20,6 +21,10 @@ function App() {
         <Route path="pet-details" element={<PetDetails />} />
         <Route path="adoption-form" element={<AdoptionForm />} />
         <Route path="post-pet-info" element={<PetInfoForm />} />
+        <Route
+          path="signup/organisation-details"
+          element={<OrganisationDetails />}
+        />
       </Routes>
     </Router>
   );
