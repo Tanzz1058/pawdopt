@@ -7,6 +7,8 @@
   /* margin-top: 30px; */
   padding: 20px;
   /* background-color:green; */
+  overflow: auto;
+  background-color: rgb(240, 236, 250);
 }
 
 @keyframes App-logo-spin {
@@ -39,4 +41,52 @@
   z-index: 10000;
   height: 100%;
   background-color: #0000001e;
+}
+
+.select {
+  background-color: #f36e6f;
+}
+
+.w-50 {
+  width: 50%;
+}
+
+.w-30 {
+  width: fit-content;
+}
+
+.scrollable-list {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+  overflow: scroll;
+}
+
+@media (max-width: 790px) {
+  .username {
+    display: none;
+  }
+
+  .scrollable-list {
+    table-layout: fixed;
+    width: 100%;
+    overflow: scroll;
+  }
+}
+
+.dropdown button:hover {
+  background-color: #fff;
+  color: #f36e6f;
+}
+
+.dropdown button:hover i,
+.dropdown button:hover span {
+  color: #f36e6f;
+}
+
+.heading-cell {
+  height: 30px;
+  align-items: center;
+  margin-left: 5px;
+  margin-right: 5px;
 }

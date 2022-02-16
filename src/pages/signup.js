@@ -54,6 +54,17 @@ const Signup = (props) => {
         .post(`${process.env.REACT_APP_BASE_URL}/auth/users/`, formData)
         .then((res) => {
           console.log(res);
+          localStorage.setItem("userId", res.data.id);
+          localStorage.setItem("userType", res.data.user_type);
+          localStorage.setItem("email", res.data.email);
+          localStorage.setItem("userName", res.data.user_name);
+
+          message.success("Signed In successfully");
+          if (selectedOption == "shelter") {
+            window.location.replace("/signup/details");
+          } else {
+            window.location.replace("/signup/user-details");
+          }
         })
         .catch((e) => {
           console.log(e);
@@ -205,13 +216,13 @@ const Signup = (props) => {
                     onChange={(e) => setUsername(e.target.value)}
                   />
 
-                  <FormControl
+                  {/* <FormControl
                     type="text"
                     placeholder="Name"
                     className="mb-3 "
                     required
                     onChange={(e) => setName(e.target.value)}
-                  />
+                  /> */}
 
                   <FormControl
                     type="password"

@@ -1,4 +1,10 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Redirect,
+  Navigate,
+} from "react-router-dom";
 
 import Login from "./pages/login";
 
@@ -10,6 +16,8 @@ import PetDetails from "./pages/petDetails";
 import AdoptionForm from "./pages/adoptionForm";
 import PetInfoForm from "./pages/petInfoForm";
 import OrganisationDetails from "./pages/organisationDetails";
+import Applications from "./pages/applications";
+import UserDetails from "./pages/userDetails";
 
 function App() {
   return (
@@ -18,13 +26,18 @@ function App() {
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
         <Route path="findpets" element={<DogList />} />
-        <Route path="pet-details" element={<PetDetails />} />
-        <Route path="adoption-form" element={<AdoptionForm />} />
-        <Route path="post-pet-info" element={<PetInfoForm />} />
+        <Route path="pet-details/:id" element={<PetDetails />} />
         <Route
-          path="signup/organisation-details"
-          element={<OrganisationDetails />}
+          path="adoption-form/:shelterId/:petId"
+          element={<AdoptionForm />}
         />
+        <Route path="post-pet-info" element={<PetInfoForm />} />
+        <Route path="details" element={<OrganisationDetails />} />
+        <Route path="applications" element={<Applications />} />
+        <Route path="user-details" element={<UserDetails />} />
+        <Route>
+          <Route path="" element={<Navigate to="/login" />} />
+        </Route>
       </Routes>
     </Router>
   );

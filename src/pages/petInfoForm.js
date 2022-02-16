@@ -13,6 +13,7 @@ import {
 import axios from "axios";
 
 export default function PetInfoForm() {
+  const userId = localStorage.getItem("userId");
   const [fileList, setFileList] = useState([]);
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
@@ -152,9 +153,13 @@ export default function PetInfoForm() {
     formData.append("size", size);
     formData.append("vaccination", vaccination);
     formData.append("adoption_fee", fee);
+    formData.append("is_rescued", isRescued);
     formData.append("first_image", image1.originFileObj);
     image2 && formData.append("second_image", image2?.originFileObj);
     image3 && formData.append("third_image", image3?.originFileObj);
+    formData.append("animalshelter", userId);
+    formData.append("story", story);
+
     console.log(formData);
 
     if (!image1) {
@@ -165,13 +170,15 @@ export default function PetInfoForm() {
       message.error("Please specify the age");
     } else if (!breed) {
       message.error("Please specify the breed");
-    } else if (!age) {
-      message.error("Please specify the age");
+    } else if (breed == "Others" && !breed2) {
+      message.error("Please specify the breed");
+    } else if (!size) {
+      message.error("Please specify the size");
     } else if (!vaccination) {
       message.error("Please specify the vaccination status");
     } else {
       axios
-        .post(process.env.REACT_APP_BASE_URL + "/api/v1pet_api/", formData, {
+        .post(process.env.REACT_APP_BASE_URL + `/api/v1/pet_api/`, formData, {
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": `multipart/form-data;boundary=${formData._boundary}`,
@@ -183,6 +190,7 @@ export default function PetInfoForm() {
           setImage2("");
           setImage3("");
           console.log(res);
+          message.success("The information has been posted");
         })
         .catch((e) => {
           console.log(e.message);
@@ -190,6 +198,7 @@ export default function PetInfoForm() {
           setImage1("");
           setImage2("");
           setImage3("");
+          message.success("Something went wrong!");
         });
     }
   };
@@ -251,7 +260,7 @@ export default function PetInfoForm() {
                   <option value="">Select</option>
                   <option value="Puppy">Puppy</option>
                   <option value="Medium">Medium</option>
-                  <option value="Large">Adult</option>
+                  <option value="Adult">Adult</option>
                 </Form.Select>
 
                 <FormLabel>Gender</FormLabel>
@@ -282,26 +291,26 @@ export default function PetInfoForm() {
                 >
                   <option value="">Select</option>
                   <option value="Unknown">Unknown</option>
-                  <option value="Pug">Pug</option>
-                  <option value="Golden Retriever">Golden Retriever</option>
-                  <option value="German Shepherd">German Shepherd</option>
-                  <option value="Labrador">Labrador</option>
                   <option value="American Bulldog">American Bulldog</option>
-                  <option value="Cocker Spaniel">Cocker Spaniel</option>
-                  <option value="Schitzu">Schitzu</option>
-                  <option value="German Shepherd">German Shepherd</option>
-                  <option value="Pomeranian">Pomeranian</option>
-                  <option value="Doberman">Doberman</option>
-                  <option value="Boxer">Boxer</option>
                   <option value="Beagle">Beagle</option>
-                  <option value="Rottweiler">Rottweiler</option>
-                  <option value="Hound">Hound</option>
-                  <option value="Dalmatian">Dalmatian</option>
-                  <option value="Samoyed">Samoyed</option>
-                  <option value="St. Dermard">St. Dermard</option>
+                  <option value="Bhakarwal">Bhakarwal Dog</option>
+                  <option value="Boxer">Boxer</option>
                   <option value="Chihuahua">Chihuahua</option>
+                  <option value="Cocker Spaniel">Cocker Spaniel</option>
+                  <option value="Dalmatian">Dalmatian</option>
+                  <option value="Doberman">Doberman</option>
+                  <option value="German Shepherd">German Shepherd</option>
+                  <option value="Golden Retriever">Golden Retriever</option>
+                  <option value="Hound">Hound</option>
                   <option value="Husky">Husky</option>
                   <option value="Indian Pariah Dog">Indian Pariah Dog</option>
+                  <option value="Labrador">Labrador</option>
+                  <option value="Pomeranian">Pomeranian</option>
+                  <option value="Pug">Pug</option>
+                  <option value="Rottweiler">Rottweiler</option>
+                  <option value="Samoyed">Samoyed</option>
+                  <option value="Schitzu">Schitzu</option>
+                  <option value="St. Dermard">St. Dermard</option>
                   <option value="Others">Others</option>
                 </Form.Select>
 

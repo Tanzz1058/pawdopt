@@ -1,6 +1,6 @@
 .org-detail-header {
   border-radius: 15px;
-  background-color: #f36e6f;
+  /* background-color: #f36e6f; */
   padding: 12px 2px;
   width: 80%;
   text-align: center;
@@ -16,4 +16,36 @@
 
 .input_err {
   border: 2px solid red;
+}
+
+.profile_pic_container {
+  margin: 0 auto;
+  max-width: 450px;
+  flex-direction: row;
+  align-items: center;
+  text-align: center;
+}
+.profile_pic_container img {
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+}
+
+.upload_label {
+  width: max-content;
+  font-size: 14px;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-radius: 12px;
+  background-color: white;
+  border: 1px solid #bebec0;
+  color: #535353;
+  transition: box-shadow 0.5s;
+}
+.upload_label:hover {
+  box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.74);
+}
+.login_form_input {
+  display: none;
 }

@@ -19,6 +19,17 @@
   height: 100%;
 }
 
+.product_image_details {
+  height: 400px;
+  width: 600px;
+  /* border: 1px solid black; */
+  margin: auto;
+}
+.product_image_details img {
+  height: 100%;
+  object-fit: contain;
+}
+
 @media (max-width: 700px) {
   .carousel_product_details {
     max-width: 100%;

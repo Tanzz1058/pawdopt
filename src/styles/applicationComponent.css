@@ -1,0 +1,129 @@
+.invite-row {
+  display: flex;
+  padding: 20px 10px 10px 10px;
+  /* width: auto; */
+  color: #f36e6f;
+  justify-content: space-between;
+  margin-top: 10px;
+  flex-wrap: nowrap;
+}
+
+.invite-row-child {
+  display: flex;
+  padding: 20px 10px 10px 10px;
+  width: auto;
+  background-color: #fff;
+  border-radius: 10px;
+  justify-content: space-between;
+  margin-top: 10px;
+  flex-wrap: nowrap;
+  /* width: min-content; */
+  /* overflow: scroll; */
+}
+.invite-row::-webkit-scrollbar {
+  display: none;
+}
+
+.invite-name-description {
+  margin-left: 10px;
+}
+
+.invite-name-description h1 {
+  font-size: medium;
+  color: #0c5293;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.invite-customer-name {
+  display: flex;
+  width: 250px;
+  align-items: center;
+}
+
+.job-invite {
+  width: 250px;
+}
+
+.job-invite-bid {
+  width: 360px;
+}
+
+.job-invite h3,
+.date-invite h3,
+.job-invite-bid h3,
+.bid-status h3,
+.bid-status-td h3 {
+  color: #0c5293;
+  font-size: medium;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.date-invite {
+  width: 160px;
+  font-size: medium;
+}
+
+.bid-status {
+  width: 160px;
+  color: #0c5293;
+  font-size: medium;
+}
+
+.bid-status-td {
+  /* background-color: #6e6f6f; */
+}
+
+.date-invite button {
+  border: none;
+  background-color: #f36e6f;
+  color: #ffff;
+  padding: 10px;
+  font-size: small;
+}
+
+.customer-cell-invite {
+  width: auto;
+  display: flex;
+  align-items: center;
+  text-overflow: ellipsis;
+  /* overflow: hidden; */
+  white-space: nowrap;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.invite-image {
+  min-width: 40px;
+  max-width: 40px;
+  height: 40px;
+}
+
+.invite-image img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+.heading-cell {
+  height: 30px;
+  align-items: center;
+  margin-left: 5px;
+  margin-right: 5px;
+  width: auto;
+}
+
+@media (max-width: 1100px) {
+  .invite-row {
+    width: fit-content;
+  }
+  .invite-row-child {
+    width: fit-content;
+  }
+}
+
+/* @media (max-width: 790px) {
+  .inv
+} */

@@ -22,6 +22,7 @@ const Login = () => {
         })
         .then((res) => {
           console.log(res);
+          localStorage.setItem("userId", res.data.id);
           message.success("An email has been sent to reset your password");
         })
         .catch((e) => {
@@ -40,18 +41,41 @@ const Login = () => {
     axios
       .post(`${process.env.REACT_APP_BASE_URL}/auth/token/login/`, {
         email: email,
+        password: password,
+        username: email,
       })
       .then((res) => {
         console.log(res);
-        message.success("An email has been sent to reset your password");
+        localStorage.setItem("token", res.data.auth_token);
+        getUserInfo(res.data.auth_token);
       })
       .catch((e) => {
         console.log(e);
         message.error(
           e.response.data?.email?.[0] ||
             e.response.data?.password?.[0] ||
-            "Someting went wrong please try again later"
+            "Wrong Credentials"
         );
+      });
+  };
+
+  const getUserInfo = (token) => {
+    axios
+      .get(`${process.env.REACT_APP_BASE_URL}/auth/users/me/`, {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        localStorage.setItem("userId", res.data.id);
+        localStorage.setItem("userType", res.data.user_type);
+        localStorage.setItem("email", res.data.email);
+        localStorage.setItem("userName", res.data.user_name);
+        message.success("Logged in successfully");
+        res.data.user_type == "CUS"
+          ? window.location.replace("/userDetails")
+          : window.location.replace("/details");
       });
   };
 

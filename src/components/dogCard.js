@@ -8,11 +8,11 @@ const DogCard = (props) => {
   return (
     <div
       className="col-lg-4 col-md-4 col-sm-12"
-      onClick={() => navigator("/pet-details")}
+      onClick={() => navigator(`/pet-details/${props.id}`)}
     >
       <div className="dogCard">
         <div className="dogcard-image-container">
-          <img src="/images/homeDog.jpg" alt="dog" />
+          <img src={props?.img} alt="dog" />
         </div>
         <div className="row d-flex flex-column dogcard-text text-center">
           <p className="mb-0">{props.name}</p>

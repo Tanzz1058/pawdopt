@@ -1,8 +1,46 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Form, FormControl, FormLabel, Dropdown } from "react-bootstrap";
 import Header from "../components/header";
+import axios from "axios";
 
 const AdoptionForm = () => {
+  const sendForm = (e) => {
+    e.preventDefault();
+  };
+
+  const [err, setErr] = useState();
+  const [load, setLoad] = useState();
+  const [state, setState] = useState();
+  const [city, setCity] = useState();
+  const [pincode, setPincode] = useState();
+  const [address, setAddress] = useState();
+  const [occupation, setOccupation] = useState();
+
+  useEffect(() => {
+    if (pincode) {
+      setLoad(true);
+
+      axios
+        .get(`https://api.postalpincode.in/pincode/${pincode}`)
+        .then((res) => {
+          console.log(res);
+          setLoad(false);
+          if (res.data.Status == "Error") {
+            setErr("Invalid PIN Code");
+          } else {
+            setErr("");
+            setCity(res.data[0]?.PostOffice[0].District);
+            setState(res.data[0]?.PostOffice[0].State);
+          }
+        })
+        .catch((e) => {
+          setLoad(false);
+          setErr("Invalid PIN Code");
+          setCity("");
+          setState("");
+        });
+    }
+  }, [pincode]);
   return (
     <>
       <Header />
@@ -11,27 +49,58 @@ const AdoptionForm = () => {
           <div className="row">
             <h1 className="text-center mb-4">Adoption Form</h1>
             <div className="form-container">
-              <Form>
+              <Form onSubmit={(e) => sendForm(e)}>
                 <FormLabel className="bold fs-4">Personal Details</FormLabel>
                 <div className="row">
                   <div className="col-6">
                     <FormLabel>First Name</FormLabel>
-                    <FormControl type="text" placeholder="" className="mb-3 " />
+                    <FormControl
+                      type="text"
+                      placeholder=""
+                      className="mb-3 "
+                      required
+                    />
                   </div>
                   <div className="col-6">
                     <FormLabel>Last Name</FormLabel>
 
-                    <FormControl type="text" placeholder="" className="mb-3 " />
+                    <FormControl
+                      type="text"
+                      placeholder=""
+                      className="mb-3 "
+                      required
+                    />
                   </div>
                 </div>
                 <FormLabel>Phone Number</FormLabel>
-                <FormControl type="phone" placeholder="" className="mb-3" />
+                <FormControl
+                  type="phone"
+                  placeholder=""
+                  className="mb-3"
+                  required
+                />
                 <FormLabel>Email</FormLabel>
-                <FormControl type="email" placeholder="" className="mb-3" />
+                <FormControl
+                  type="email"
+                  placeholder=""
+                  className="mb-3"
+                  required
+                />
                 <FormLabel>Occupation</FormLabel>
-                <FormControl type="text" placeholder="" className="mb-3 " />
-                <FormLabel>Employer's Phone Number(If applicable)</FormLabel>
-                <FormControl type="phone" placeholder="+91" className="mb-3 " />
+                <FormControl
+                  type="text"
+                  placeholder=""
+                  className="mb-3 "
+                  required
+                  onChange={(e) => setOccupation(e.taget.value)}
+                />
+                {/* <FormLabel>Employer's Phone Number(If applicable)</FormLabel>
+                <FormControl
+                  type="phone"
+                  placeholder="+91"
+                  className="mb-3 "
+                  required
+                /> */}
 
                 <FormLabel className="bold fs-4">Address</FormLabel>
                 <div className="row">
@@ -40,6 +109,8 @@ const AdoptionForm = () => {
                       type="text"
                       placeholder="State"
                       className="mb-3 "
+                      required
+                      onChange={(e) => setState(e.target.value)}
                     />
                   </div>
                   <div className="col-6">
@@ -47,6 +118,8 @@ const AdoptionForm = () => {
                       type="text"
                       placeholder="City"
                       className="mb-3 "
+                      required
+                      onChange={(e) => setCity(e.taget.value)}
                     />
                   </div>
                 </div>
@@ -54,11 +127,15 @@ const AdoptionForm = () => {
                   type="text"
                   placeholder="Street Address"
                   className="mb-3 "
+                  required
+                  onChange={(e) => setAddress(e.taget.value)}
                 />
                 <FormControl
                   type="text"
                   placeholder="Pincode"
                   className="mb-3 "
+                  required
+                  onChange={(e) => setPincode(e.taget.value)}
                 />
 
                 <FormLabel className="bold fs-4">Adoption Question</FormLabel>
@@ -98,6 +175,7 @@ const AdoptionForm = () => {
                   className="form-control mb-3"
                   id="textAreaExample1"
                   rows="4"
+                  required
                 ></textarea>
 
                 <FormLabel>
@@ -107,6 +185,7 @@ const AdoptionForm = () => {
                   className="form-control mb-3"
                   id="textAreaExample1"
                   rows="4"
+                  required
                 ></textarea>
 
                 <FormLabel>
@@ -116,6 +195,7 @@ const AdoptionForm = () => {
                   className="form-control mb-3"
                   id="textAreaExample1"
                   rows="4"
+                  required
                 ></textarea>
 
                 <FormLabel>
@@ -125,6 +205,7 @@ const AdoptionForm = () => {
                   className="form-control mb-3"
                   id="textAreaExample1"
                   rows="4"
+                  required
                 ></textarea>
 
                 <FormLabel>
@@ -134,6 +215,7 @@ const AdoptionForm = () => {
                   className="form-control mb-3"
                   id="textAreaExample1"
                   rows="4"
+                  required
                 ></textarea>
 
                 <FormLabel>
@@ -143,6 +225,7 @@ const AdoptionForm = () => {
                   className="form-control mb-3"
                   id="textAreaExample1"
                   rows="4"
+                  required
                 ></textarea>
 
                 <FormLabel>
@@ -152,6 +235,7 @@ const AdoptionForm = () => {
                   className="form-control mb-3"
                   id="textAreaExample1"
                   rows="4"
+                  required
                 ></textarea>
 
                 <button

@@ -9,20 +9,19 @@ import Spinner from "../components/spinner";
 
 import "../styles/organisationDetails.css";
 
-const OrganisationDetails = (props) => {
+const UserDetails = (props) => {
   const [phone, setPhone] = useState("");
   const [addressCity, setAddressCity] = useState("");
   const [addressState, setAddressState] = useState("");
   const [addressZip, setAddressZip] = useState("");
   const [err, setErr] = useState("");
   const [load, setLoad] = useState(false);
-  const [name, setName] = useState("");
+  const [first, setFirst] = useState("");
+  const [last, setLast] = useState();
   const [pic, setPic] = useState("");
   const [pic2, setPic2] = useState("");
   const [phoneErr, setPhoneErr] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [mission, setMission] = useState("");
-  const [policy, setPolicy] = useState("");
 
   const userId = localStorage.getItem("userId");
 
@@ -89,7 +88,17 @@ const OrganisationDetails = (props) => {
   //     console.log(e);
   //   }
   // }
+  const setImage = (e) => {
+    const imageFile = e.target.files[0];
 
+    if (!imageFile.name.match(/\.(jpg|jpeg|png)$/)) {
+      message.error("Please upload a jpg or png file");
+      console.log(imageFile);
+    } else {
+      setPic(URL.createObjectURL(imageFile));
+      setPic2(imageFile);
+    }
+  };
   useEffect(() => {
     if (addressZip) {
       setLoad(true);
@@ -120,17 +129,18 @@ const OrganisationDetails = (props) => {
     e.preventDefault();
     setIsLoading(true);
     if (!err && !phoneErr && !load) {
+      let formData = new FormData();
+      formData.append("contact_no", `+91${phone}`);
+      formData.append("first_name", first);
+      formData.append("last_name", last);
+      formData.append("pincode", addressZip);
+      formData.append("city", addressCity);
+      formData.append("state", addressState);
+      formData.append("user", userId);
+      formData.append("profile_pic", pic2);
+
       axios
-        .post(process.env.REACT_APP_BASE_URL + `/api/v1/animal_shelter_api/`, {
-          contact_no: `+91${phone}`,
-          organisations_name: name,
-          pincode: addressZip,
-          city: addressCity,
-          state: addressState,
-          user: userId,
-          organisations_mission: mission,
-          organisations_policies: policy,
-        })
+        .post(process.env.REACT_APP_BASE_URL + `/api/v1/user_info/`, formData)
         .then((res) => {
           console.log(res.data);
           setIsLoading(false);
@@ -166,18 +176,6 @@ const OrganisationDetails = (props) => {
     window.location.replace("/login");
   };
 
-  const setImage = (e) => {
-    const imageFile = e.target.files[0];
-
-    if (!imageFile.name.match(/\.(jpg|jpeg|png)$/)) {
-      message.error("Please upload a jpg or png file");
-      console.log(imageFile);
-    } else {
-      setPic(URL.createObjectURL(imageFile));
-      setPic2(imageFile);
-    }
-  };
-
   return (
     <div style={{ backgroundColor: "#F0ECFA" }}>
       {isLoading ? (
@@ -199,7 +197,7 @@ const OrganisationDetails = (props) => {
               Log Out
             </div>
             <div className="org-detail-header">
-              <h2 className="pink">Please fill in the following details</h2>
+              <h2 className="white">Please fill in the following details</h2>
             </div>
             <div className="org-detail-page">
               <Form onSubmit={(e) => sendShelterData(e)}>
@@ -219,18 +217,31 @@ const OrganisationDetails = (props) => {
                       onChange={(e) => setImage(e)}
                     />
                     <label for="pic" className="upload_label">
-                      Upload organisation logo
+                      Upload a new Picture
                     </label>
                   </Col>
                   {/* )} */}
                 </Row>
-                <FormControl
-                  required
-                  type="text"
-                  placeholder="Organisation Name*"
-                  className="mb-3 "
-                  onChange={(e) => setName(e.target.value)}
-                />
+                <div className="row">
+                  <div className="col-6">
+                    <FormControl
+                      required
+                      type="text"
+                      placeholder="First Name*"
+                      className="mb-3"
+                      onChange={(e) => setFirst(e.target.value)}
+                    />
+                  </div>
+                  <div className="col-6">
+                    <FormControl
+                      required
+                      type="text"
+                      placeholder="Last Name*"
+                      className="mb-3"
+                      onChange={(e) => setLast(e.target.value)}
+                    />
+                  </div>
+                </div>
                 <InputGroup>
                   <InputGroup.Text className="mb-3">+91</InputGroup.Text>
                   <FormControl
@@ -341,20 +352,6 @@ const OrganisationDetails = (props) => {
                 <Form.Control.Feedback type="invalid">
                   Please choose a username.
                 </Form.Control.Feedback>
-                <Form.Control
-                  as="textarea"
-                  rows={4}
-                  className="mb-3 "
-                  placeholder="Organisation Mission(if any)"
-                  onChange={(e) => setMission(e.target.value)}
-                />
-                <Form.Control
-                  as="textarea"
-                  rows={4}
-                  className="mb-3 "
-                  placeholder="Organisation Policies(if any)"
-                  onChange={(e) => setPolicy(e.target.value)}
-                />
 
                 <button
                   className="theme-color-pink text-center p-2 col-12 align-items-center login-submit mb-3"
@@ -370,4 +367,4 @@ const OrganisationDetails = (props) => {
     </div>
   );
 };
-export default OrganisationDetails;
+export default UserDetails;
