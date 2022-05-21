@@ -37,7 +37,7 @@ const Signup = (props) => {
   //   });
   // }, []);
 
-  function register(e) {
+  const register = (e) => {
     e.preventDefault();
     let formData = new FormData();
     formData.append("email", email);
@@ -60,11 +60,7 @@ const Signup = (props) => {
           localStorage.setItem("userName", res.data.user_name);
 
           message.success("Signed In successfully");
-          if (selectedOption == "shelter") {
-            window.location.replace("/signup/details");
-          } else {
-            window.location.replace("/signup/user-details");
-          }
+          window.location.replace("/view/profile");
         })
         .catch((e) => {
           console.log(e);
@@ -77,7 +73,7 @@ const Signup = (props) => {
           );
         });
     }
-  }
+  };
 
   return (
     <div className="page_content">
@@ -108,6 +104,20 @@ const Signup = (props) => {
               </Carousel.Item>
               <Carousel.Item className="home-dog-image-container">
                 <img
+                  src="/images/homeDog6.jpg"
+                  alt="dog"
+                  className="home-dog-img"
+                />
+              </Carousel.Item>
+              <Carousel.Item className="home-dog-image-container">
+                <img
+                  src="/images/homeDog5.jpg"
+                  alt="dog"
+                  className="home-dog-img"
+                />
+              </Carousel.Item>
+              <Carousel.Item className="home-dog-image-container">
+                <img
                   src="/images/adoption2.jpg"
                   alt="dog"
                   className="home-dog-img"
@@ -119,12 +129,13 @@ const Signup = (props) => {
             {!selectedOption && (
               <div className="row text-center">
                 <h2 className="mb-4">
-                  Who all can register to Pawd
+                  Register to Pawd
                   <span>
                     <i class="fa fa-paw pink" aria-hidden="true"></i>
                   </span>
-                  pt?
+                  pt
                 </h2>
+                <p>Please select a category</p>
                 <div
                   className="col-6 align-self-center"
                   onClick={() => setSelectedOption("shelter")}
@@ -186,6 +197,18 @@ const Signup = (props) => {
             {selectedOption == "user" && (
               <div className="row">
                 <Form onSubmit={(e) => register(e)}>
+                  <input
+                    type="email"
+                    name="hidden"
+                    id="hidden"
+                    style={{
+                      width: "0",
+                      height: "0",
+                      border: "0",
+                      padding: "0",
+                    }}
+                  />
+
                   <div className="row text-center justify-content-between mb-5">
                     <h1>
                       Register to Pawd
@@ -198,6 +221,7 @@ const Signup = (props) => {
                   <button
                     className="theme-color-pink text-center p-2 align-items-center login-submit mb-3"
                     onClick={() => setSelectedOption("")}
+                    type="button"
                   >
                     Change user type
                   </button>
@@ -208,6 +232,7 @@ const Signup = (props) => {
                     required
                     onChange={(e) => setEmail(e.target.value)}
                   />
+
                   <FormControl
                     type="text"
                     placeholder="Username"
@@ -260,6 +285,7 @@ const Signup = (props) => {
                   </div>
                   <button
                     className="theme-color-pink text-center p-2 align-items-center login-submit mb-3"
+                    type="button"
                     onClick={() => setSelectedOption("")}
                   >
                     Change user type

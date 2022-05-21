@@ -62,6 +62,10 @@
   overflow: scroll;
 }
 
+.username {
+  font-size: small;
+}
+
 @media (max-width: 790px) {
   .username {
     display: none;

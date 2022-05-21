@@ -22,7 +22,7 @@ const DogList = () => {
     setLoad(true);
     axios
       .get(
-        `${process.env.REACT_APP_BASE_URL}/api/v1/pet_api/?breed=${breed}&age=${age}&size=${size}&gender=${gender}&pincode=${pincode}`
+        `${process.env.REACT_APP_BASE_URL}/api/v1/pet_api/?breed=${breed}&age=${age}&size=${size}&gender=${gender}&animalshelter__pincode=${pincode}`
       )
       .then((res) => {
         console.log(res.data);
@@ -80,7 +80,7 @@ const DogList = () => {
                       value=""
                       style={{ backgroundColor: "#fff", color: "black" }}
                     >
-                      Select
+                      Any
                     </option>
                     <option
                       value="Unknown"
@@ -228,7 +228,7 @@ const DogList = () => {
                       value=""
                       style={{ backgroundColor: "#fff", color: "black" }}
                     >
-                      Select
+                      Any
                     </option>
                     <option
                       value="Male"
@@ -292,7 +292,7 @@ const DogList = () => {
                       value=""
                       style={{ backgroundColor: "#fff", color: "black" }}
                     >
-                      Select
+                      Any
                     </option>
                     <option
                       value="less than 1"
@@ -405,6 +405,8 @@ const DogList = () => {
                       img={res.first_image}
                       location={res.city}
                       id={res.id}
+                      key={res.id}
+                      is_adopted={res.is_adopted}
                     />
                   ))
                 )}

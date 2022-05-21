@@ -11,9 +11,11 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import axios from "axios";
+import { useNavigate } from "react-router";
 
 export default function PetInfoForm() {
   const userId = localStorage.getItem("userId");
+  const animalShelterId = localStorage.getItem("userInfoId");
   const [fileList, setFileList] = useState([]);
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
@@ -34,6 +36,8 @@ export default function PetInfoForm() {
   const [vaccination, setVaccination] = useState(false);
   const [fee, setFee] = useState(0);
 
+  const navigate = useNavigate();
+
   const dummyRequest = ({ file, onSuccess }) => {
     setTimeout(() => {
       onSuccess("ok");
@@ -52,7 +56,10 @@ export default function PetInfoForm() {
   const onChange = ({ fileList: newFileList }) => {
     var arr = [];
     newFileList.forEach((e) => {
-      if (e.type === "image/jpeg" || e.type === "image/png") {
+      if (
+        (e.type === "image/jpeg" || e.type === "image/png") &&
+        e.size <= 250000
+      ) {
         arr.push(e);
       }
     });
@@ -73,16 +80,18 @@ export default function PetInfoForm() {
   );
 
   const handlePreview = async (file) => {
-    if (!file.url || !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
+    if (file) {
+      if (!file.url || !file.preview) {
+        file.preview = await getBase64(file.originFileObj);
+      }
+      console.log(file.preview);
+      setPreviewImage(file.url || file.preview);
+      setPreviewTitle(
+        file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
+      );
+      setPreviewVisible(true);
+      console.log(previewImage);
     }
-    console.log(file.preview);
-    setPreviewImage(file.url || file.preview);
-    setPreviewTitle(
-      file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
-    );
-    setPreviewVisible(true);
-    console.log(previewImage);
   };
 
   const uploadToFb = () => {
@@ -157,7 +166,7 @@ export default function PetInfoForm() {
     formData.append("first_image", image1.originFileObj);
     image2 && formData.append("second_image", image2?.originFileObj);
     image3 && formData.append("third_image", image3?.originFileObj);
-    formData.append("animalshelter", userId);
+    formData.append("animalshelter", animalShelterId);
     formData.append("story", story);
 
     console.log(formData);
@@ -185,19 +194,20 @@ export default function PetInfoForm() {
           },
         })
         .then((res) => {
-          setFileList([]);
-          setImage1("");
-          setImage2("");
-          setImage3("");
+          // setFileList([]);
+          // setImage1("");
+          // setImage2("");
+          // setImage3("");
           console.log(res);
           message.success("The information has been posted");
+          navigate(`/organisation/posts/${animalShelterId}`);
         })
         .catch((e) => {
           console.log(e.message);
-          setFileList([]);
-          setImage1("");
-          setImage2("");
-          setImage3("");
+          // setFileList([]);
+          // setImage1("");
+          // setImage2("");
+          // setImage3("");
           message.success("Something went wrong!");
         });
     }
@@ -258,9 +268,9 @@ export default function PetInfoForm() {
                   onChange={(e) => setSize(e.target.value)}
                 >
                   <option value="">Select</option>
-                  <option value="Puppy">Puppy</option>
+                  <option value="Puppy">Small</option>
                   <option value="Medium">Medium</option>
-                  <option value="Adult">Adult</option>
+                  <option value="Adult">Large</option>
                 </Form.Select>
 
                 <FormLabel>Gender</FormLabel>
@@ -334,7 +344,7 @@ export default function PetInfoForm() {
                   onChange={(e) => setVaccination(e.target.value)}
                 >
                   <option value="">Select</option>
-                  <option value="Not vaccinated">Not vaccinated</option>
+                  <option value="Not Vaccianted">Not vaccinated</option>
                   <option value="Partially Vaccinated">
                     Partially Vaccinated
                   </option>
@@ -349,9 +359,16 @@ export default function PetInfoForm() {
                     //   className="mb-3"
                     beforeUpload={(file) => {
                       const isJPG =
-                        file.type === "image/jpeg" || file.type === "image/png";
+                        file.type === "image/jpeg" ||
+                        file.type === "image/png" ||
+                        file.type === "image/jpg";
+
+                      const isLimit = file.size <= 250000;
                       if (!isJPG) {
                         message.error("You can only upload JPG or PNG file!");
+                        return false;
+                      } else if (!isLimit) {
+                        message.error("This file exceeds 250KB limit!");
                         return false;
                       } else {
                         console.log(file);

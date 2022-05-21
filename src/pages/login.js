@@ -3,7 +3,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { Form, FormControl, Carousel, Row } from "react-bootstrap";
 import { useNavigate } from "react-router";
-
+import Spinner from "../components/spinner";
 import "../styles/auth.css";
 import "../styles/colors.css";
 
@@ -12,10 +12,14 @@ const Login = () => {
   const [forgot, setForgot] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const forgotPassword = (e) => {
     e.preventDefault();
+
     if (email) {
+      setLoading(true);
+
       axios
         .post(`${process.env.REACT_APP_BASE_URL}/auth/users/reset_password/`, {
           email: email,
@@ -24,20 +28,22 @@ const Login = () => {
           console.log(res);
           localStorage.setItem("userId", res.data.id);
           message.success("An email has been sent to reset your password");
+          setLoading(false);
         })
         .catch((e) => {
           console.log(e);
           message.error(
             e.response.data?.email?.[0] ||
-              "Someting went wrong please try again later"
+              "Something went wrong please try again later"
           );
+          setLoading(false);
         });
     }
   };
 
   const login = (e) => {
     e.preventDefault();
-
+    setLoading(true);
     axios
       .post(`${process.env.REACT_APP_BASE_URL}/auth/token/login/`, {
         email: email,
@@ -48,6 +54,7 @@ const Login = () => {
         console.log(res);
         localStorage.setItem("token", res.data.auth_token);
         getUserInfo(res.data.auth_token);
+        setLoading(false);
       })
       .catch((e) => {
         console.log(e);
@@ -57,6 +64,7 @@ const Login = () => {
             "Wrong Credentials"
         );
       });
+    setLoading(false);
   };
 
   const getUserInfo = (token) => {
@@ -73,14 +81,21 @@ const Login = () => {
         localStorage.setItem("email", res.data.email);
         localStorage.setItem("userName", res.data.user_name);
         message.success("Logged in successfully");
-        res.data.user_type == "CUS"
-          ? window.location.replace("/userDetails")
-          : window.location.replace("/details");
+        window.location.replace("/view/profile");
       });
   };
 
   return (
     <div className="page_content">
+      {loading ? (
+        <div className="spinner-container">
+          <div className="d-flex justify-content-center">
+            <Spinner size="large" show={true} />
+          </div>
+        </div>
+      ) : (
+        <></>
+      )}
       <div className="container m-auto">
         <div className="row mt-3">
           <div className="col-lg-6 md-6 home-dog-image-container d-none d-lg-block">
@@ -102,6 +117,20 @@ const Login = () => {
               <Carousel.Item className="home-dog-image-container">
                 <img
                   src="/images/adoption.jpg"
+                  alt="dog"
+                  className="home-dog-img"
+                />
+              </Carousel.Item>
+              <Carousel.Item className="home-dog-image-container">
+                <img
+                  src="/images/homeDog6.jpg"
+                  alt="dog"
+                  className="home-dog-img"
+                />
+              </Carousel.Item>
+              <Carousel.Item className="home-dog-image-container">
+                <img
+                  src="/images/homeDog5.jpg"
                   alt="dog"
                   className="home-dog-img"
                 />

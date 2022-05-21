@@ -1,0 +1,17 @@
+.accent {
+  display: inline-block;
+  width: 30%;
+  font-weight: bold;
+  text-align: left;
+}
+
+.adoption-response {
+  width: 80%;
+  background-color: #fff;
+  border-radius: 9px;
+  margin: auto;
+}
+
+.form-p {
+  display: flex;
+}

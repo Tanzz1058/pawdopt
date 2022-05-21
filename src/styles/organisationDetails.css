@@ -9,7 +9,7 @@
 .org-detail-page {
   margin-top: -25px;
   padding: 12px;
-  width: 80%;
+  width: 70%;
   background: #fff 0% 0% no-repeat padding-box;
   border-radius: 15px;
 }
@@ -27,8 +27,8 @@
 }
 .profile_pic_container img {
   border-radius: 50%;
-  width: 200px;
-  height: 200px;
+  width: 180px;
+  height: 180px;
   object-fit: cover;
 }
 
@@ -48,4 +48,10 @@
 }
 .login_form_input {
   display: none;
+}
+
+@media (max-width: 900px) {
+  .org-detail-page {
+    width: 90%;
+  }
 }

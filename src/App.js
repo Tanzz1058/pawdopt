@@ -18,29 +18,69 @@ import PetInfoForm from "./pages/petInfoForm";
 import OrganisationDetails from "./pages/organisationDetails";
 import Applications from "./pages/applications";
 import UserDetails from "./pages/userDetails";
+import ProfileUser from "./pages/profileUser";
+import ApplicationView from "./pages/applicationView";
+import ShelterPosts from "./pages/shelterPosts";
 
 function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="login" element={<Login />} />
-        <Route path="signup" element={<Signup />} />
-        <Route path="findpets" element={<DogList />} />
-        <Route path="pet-details/:id" element={<PetDetails />} />
-        <Route
-          path="adoption-form/:shelterId/:petId"
-          element={<AdoptionForm />}
-        />
-        <Route path="post-pet-info" element={<PetInfoForm />} />
-        <Route path="details" element={<OrganisationDetails />} />
-        <Route path="applications" element={<Applications />} />
-        <Route path="user-details" element={<UserDetails />} />
-        <Route>
-          <Route path="" element={<Navigate to="/login" />} />
-        </Route>
-      </Routes>
-    </Router>
-  );
+  if (!localStorage.getItem("userId")) {
+    return (
+      <Router>
+        <Routes>
+          <Route path="login" element={<Login />} />
+          <Route path="signup" element={<Signup />} />
+          <Route path="view/profile" element={<ProfileUser />} />
+
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      </Router>
+    );
+  }
+  if (
+    localStorage.getItem("userId") &&
+    localStorage.getItem("userType") == "AS"
+  ) {
+    return (
+      <Router>
+        <Routes>
+          <Route path="view/profile" element={<ProfileUser />} />
+
+          <Route path="pet-details/:id" element={<PetDetails />} />
+          <Route path="post-pet-info" element={<PetInfoForm />} />
+          <Route path="details" element={<OrganisationDetails />} />
+          <Route path="applications" element={<Applications />} />
+          <Route path="applications/:id" element={<ApplicationView />} />
+          <Route
+            path="organisation/posts/:shelterId"
+            element={<ShelterPosts />}
+          />
+          <Route path="*" element={<Navigate to="/applications" />} />
+        </Routes>
+      </Router>
+    );
+  } else {
+    return (
+      <Router>
+        <Routes>
+          <Route path="user-details" element={<UserDetails />} />
+          <Route path="findpets" element={<DogList />} />
+          <Route path="pet-details/:id" element={<PetDetails />} />
+          <Route
+            path="adoption-form/:shelterId/:petId"
+            element={<AdoptionForm />}
+          />
+          <Route path="view/profile" element={<ProfileUser />} />
+          <Route path="applications" element={<Applications />} />
+          <Route path="applications/:id" element={<ApplicationView />} />
+          <Route
+            path="organisation/posts/:shelterId"
+            element={<ShelterPosts />}
+          />
+          <Route path="*" element={<Navigate to="/applications" />} />
+        </Routes>
+      </Router>
+    );
+  }
 }
 
 export default App;

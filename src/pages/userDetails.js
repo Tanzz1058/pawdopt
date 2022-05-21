@@ -1,10 +1,15 @@
 import { message } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Form, FormControl, InputGroup, Row, Col } from "react-bootstrap";
-import PlacesAutocomplete, {
-  geocodeByPlaceId,
-} from "react-places-autocomplete";
+import {
+  Form,
+  FormControl,
+  InputGroup,
+  Row,
+  Col,
+  FormLabel,
+} from "react-bootstrap";
+import Header from "../components/header";
 import Spinner from "../components/spinner";
 
 import "../styles/organisationDetails.css";
@@ -21,7 +26,9 @@ const UserDetails = (props) => {
   const [pic, setPic] = useState("");
   const [pic2, setPic2] = useState("");
   const [phoneErr, setPhoneErr] = useState("");
+  const [edit, setEdit] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [id, setId] = useState("");
 
   const userId = localStorage.getItem("userId");
 
@@ -88,19 +95,25 @@ const UserDetails = (props) => {
   //     console.log(e);
   //   }
   // }
+
+  const removeImg = () => {
+    setPic("");
+    setPic2("");
+  };
   const setImage = (e) => {
     const imageFile = e.target.files[0];
-
-    if (!imageFile.name.match(/\.(jpg|jpeg|png)$/)) {
-      message.error("Please upload a jpg or png file");
-      console.log(imageFile);
-    } else {
-      setPic(URL.createObjectURL(imageFile));
-      setPic2(imageFile);
+    if (imageFile) {
+      if (!imageFile.name.match(/\.(jpg|jpeg|png)$/)) {
+        message.error("Please upload a jpg or png file");
+        console.log(imageFile);
+      } else {
+        setPic(URL.createObjectURL(imageFile));
+        setPic2(imageFile);
+      }
     }
   };
   useEffect(() => {
-    if (addressZip) {
+    if (addressZip && edit) {
       setLoad(true);
 
       axios
@@ -125,12 +138,12 @@ const UserDetails = (props) => {
     }
   }, [addressZip]);
 
-  const sendShelterData = (e) => {
+  const sendUserData = (e) => {
     e.preventDefault();
     setIsLoading(true);
     if (!err && !phoneErr && !load) {
       let formData = new FormData();
-      formData.append("contact_no", `+91${phone}`);
+      formData.append("phone_number", `+91${phone}`);
       formData.append("first_name", first);
       formData.append("last_name", last);
       formData.append("pincode", addressZip);
@@ -140,11 +153,15 @@ const UserDetails = (props) => {
       formData.append("profile_pic", pic2);
 
       axios
-        .post(process.env.REACT_APP_BASE_URL + `/api/v1/user_info/`, formData)
+        .put(
+          process.env.REACT_APP_BASE_URL + `/api/v1/user_info/${id}/`,
+          formData
+        )
         .then((res) => {
           console.log(res.data);
           setIsLoading(false);
           message.success("Your information has been updated");
+          setEdit(false);
         })
         .catch((e) => {
           console.log(e.message);
@@ -171,113 +188,156 @@ const UserDetails = (props) => {
     console.log(phoneErr);
   };
 
-  const logout = () => {
-    localStorage.clear();
-    window.location.replace("/login");
-  };
+  useEffect(() => {
+    axios
+      .get(
+        process.env.REACT_APP_BASE_URL + `/api/v1/user_info/?user__id=${userId}`
+      )
+      .then((res) => {
+        console.log(res.data);
+        setId(res.data[0].id);
+        setFirst(res.data[0].first_name);
+        setLast(res.data[0].last_name);
+        setPic(res.data[0].profile_pic);
+        // setPic2(res.data[0].profile_pic);
+        setAddressCity(res.data[0].city);
+        setAddressState(res.data[0].state);
+        setAddressZip(res.data[0].pincode);
+        setIsLoading(false);
+        setPhone(res.data[0].phone_number.substr(3));
+      })
+      .catch((e) => {
+        console.log(e.message);
+        setIsLoading(false);
+      });
+  }, []);
 
   return (
-    <div style={{ backgroundColor: "#F0ECFA" }}>
-      {isLoading ? (
-        <div className="spinner-container">
-          <div className="d-flex justify-content-center">
-            <Spinner size="large" show={true} />
+    <>
+      <Header />
+      <div style={{ backgroundColor: "#F0ECFA" }}>
+        {isLoading ? (
+          <div className="spinner-container">
+            <div className="d-flex justify-content-center">
+              <Spinner size="large" show={true} />
+            </div>
           </div>
-        </div>
-      ) : (
-        <></>
-      )}
-      <div className="page_content">
-        <div className="container m-auto">
-          <div className="row justify-content-center">
-            <div
-              style={{ textAlign: "right", cursor: "pointer" }}
-              onClick={() => logout()}
-            >
-              Log Out
-            </div>
-            <div className="org-detail-header">
-              <h2 className="white">Please fill in the following details</h2>
-            </div>
-            <div className="org-detail-page">
-              <Form onSubmit={(e) => sendShelterData(e)}>
-                <Row
-                  className="profile_pic_container"
-                  style={{ margin: "0 auto  1rem" }}
-                >
-                  <Col>
-                    <img src={pic || "/images/user.png"} alt="profile" />
-                  </Col>
-                  {/* {update && ( */}
-                  <Col>
-                    <input
-                      type="file"
-                      id="pic"
-                      className="login_form_input"
-                      onChange={(e) => setImage(e)}
-                    />
-                    <label for="pic" className="upload_label">
-                      Upload a new Picture
-                    </label>
-                  </Col>
-                  {/* )} */}
-                </Row>
-                <div className="row">
-                  <div className="col-6">
-                    <FormControl
-                      required
-                      type="text"
-                      placeholder="First Name*"
-                      className="mb-3"
-                      onChange={(e) => setFirst(e.target.value)}
-                    />
-                  </div>
-                  <div className="col-6">
-                    <FormControl
-                      required
-                      type="text"
-                      placeholder="Last Name*"
-                      className="mb-3"
-                      onChange={(e) => setLast(e.target.value)}
-                    />
-                  </div>
-                </div>
-                <InputGroup>
-                  <InputGroup.Text className="mb-3">+91</InputGroup.Text>
-                  <FormControl
-                    required
-                    type="number"
-                    placeholder="Phone number*"
-                    className={phoneErr ? "mb-3 hide input_err" : "mb-3 hide"}
-                    onChange={(e) => validatePhone(e.target.value)}
-                  />
-                </InputGroup>
-                {phoneErr && (
-                  <p className="fs-7 red d-block">
-                    {"Please enter a valid phone number"}
-                  </p>
-                )}
-                <div className="d-flex">
-                  <FormControl
-                    required
-                    type="text"
-                    placeholder="PIN Code*"
-                    className="mb-3 "
-                    onChange={(e) => setAddressZip(e.target.value)}
-                    value={addressZip}
-                  />
-                  {load && (
-                    <div
-                      class="spinner-border spinner-border-sm m-2"
-                      role="status"
-                    >
-                      <span class="sr-only">Loading...</span>
-                    </div>
-                  )}
-                </div>
-                <p style={{ color: "red" }}>{err}</p>
+        ) : (
+          <></>
+        )}
+        <div className="page_content">
+          <div className="container m-auto">
+            <div className="row justify-content-center">
+              <div className="org-detail-header">
+                <h2 className="pink mb-3">User Details</h2>
+              </div>
+              <div className="org-detail-page">
+                <Form onSubmit={(e) => sendUserData(e)}>
+                  <Row
+                    className="profile_pic_container"
+                    style={{ margin: "0 auto  1rem" }}
+                  >
+                    <Col>
+                      <img src={pic || "/images/user.png"} alt="profile" />
+                    </Col>
+                    {/* {update && ( */}
+                    {edit && (
+                      <Col>
+                        <input
+                          type="file"
+                          id="pic"
+                          className="login_form_input"
+                          onChange={(e) => setImage(e)}
+                        />
 
-                {/* <PlacesAutocomplete
+                        <label for="pic" className="upload_label">
+                          Upload a new Picture
+                        </label>
+                        {pic2 && edit && (
+                          <i
+                            class="fa fa-times signup red signup"
+                            aria-hidden="true"
+                            onClick={() => removeImg()}
+                          >
+                            {" "}
+                            Remove
+                          </i>
+                        )}
+                      </Col>
+                    )}
+                    {/* )} */}
+                  </Row>
+                  <div className="row">
+                    <div className="col-6">
+                      <FormLabel>First Name</FormLabel>
+
+                      <FormControl
+                        required
+                        type="text"
+                        placeholder="First Name*"
+                        className="mb-3"
+                        readOnly={edit ? false : true}
+                        onChange={(e) => setFirst(e.target.value)}
+                        value={first}
+                      />
+                    </div>
+                    <div className="col-6">
+                      <FormLabel>Last Name</FormLabel>
+
+                      <FormControl
+                        required
+                        type="text"
+                        placeholder="Last Name*"
+                        className="mb-3"
+                        onChange={(e) => setLast(e.target.value)}
+                        readOnly={edit ? false : true}
+                        value={last}
+                      />
+                    </div>
+                  </div>
+                  <FormLabel>Phone Number</FormLabel>
+
+                  <InputGroup>
+                    <InputGroup.Text className="mb-3">+91</InputGroup.Text>
+                    <FormControl
+                      required
+                      type="number"
+                      placeholder="Phone number*"
+                      className={phoneErr ? "mb-3 hide input_err" : "mb-3 hide"}
+                      onChange={(e) => validatePhone(e.target.value)}
+                      readOnly={edit ? false : true}
+                      value={phone}
+                    />
+                  </InputGroup>
+                  {phoneErr && (
+                    <p className="fs-7 red d-block">
+                      {"Please enter a valid phone number"}
+                    </p>
+                  )}
+                  <FormLabel>Pincode</FormLabel>
+
+                  <div className="d-flex">
+                    <FormControl
+                      required
+                      type="text"
+                      placeholder="PIN Code*"
+                      className="mb-3 "
+                      onChange={(e) => setAddressZip(e.target.value)}
+                      value={addressZip}
+                      readOnly={edit ? false : true}
+                    />
+                    {load && (
+                      <div
+                        class="spinner-border spinner-border-sm m-2"
+                        role="status"
+                      >
+                        <span class="sr-only">Loading...</span>
+                      </div>
+                    )}
+                  </div>
+                  <p style={{ color: "red" }}>{err}</p>
+
+                  {/* <PlacesAutocomplete
                   value={address}
                   onChange={(value) => {
                     setAddress(value);
@@ -329,16 +389,19 @@ const UserDetails = (props) => {
                     </div>
                   )}
                 </PlacesAutocomplete> */}
-                <FormControl
-                  type="text"
-                  placeholder="City*"
-                  className="mb-3 "
-                  readOnly
-                  value={addressCity}
-                  required
-                  onChange={(e) => setAddressCity(e.target.value)}
-                />
-                <InputGroup hasValidation>
+                  <FormLabel>City</FormLabel>
+
+                  <FormControl
+                    type="text"
+                    placeholder="City*"
+                    className="mb-3 "
+                    readOnly
+                    value={addressCity}
+                    required
+                    onChange={(e) => setAddressCity(e.target.value)}
+                  />
+                  <FormLabel>State</FormLabel>
+
                   <FormControl
                     required
                     type="text"
@@ -348,23 +411,46 @@ const UserDetails = (props) => {
                     value={addressState}
                     onChange={(e) => setAddressState(e.target.value)}
                   />
-                </InputGroup>
-                <Form.Control.Feedback type="invalid">
-                  Please choose a username.
-                </Form.Control.Feedback>
 
-                <button
-                  className="theme-color-pink text-center p-2 col-12 align-items-center login-submit mb-3"
-                  type="submit"
-                >
-                  Submit
-                </button>
-              </Form>
+                  {edit && (
+                    <div className="row">
+                      <div className="col-6">
+                        <button
+                          className="theme-color-pink text-center p-2  align-items-center login-submit mb-3"
+                          type="submit"
+                          onClick={(e) => sendUserData(e)}
+                        >
+                          Submit
+                        </button>
+                      </div>
+                      <div className="col-6">
+                        <button
+                          className="bg-white pink text-center p-2  align-items-center login-submit mb-3"
+                          type="button"
+                          style={{ border: "2px solid #f36e6f" }}
+                          onClick={() => setEdit(false)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {!edit && (
+                    <button
+                      className="theme-color-pink text-center p-2 col-12 align-items-center login-submit mb-3"
+                      type="button"
+                      onClick={() => setEdit(true)}
+                    >
+                      Edit
+                    </button>
+                  )}
+                </Form>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 export default UserDetails;

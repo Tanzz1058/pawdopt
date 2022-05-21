@@ -8,6 +8,7 @@ import { useNavigate } from "react-router";
 import { message } from "antd";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import Modals from "../components/modal";
 
 const Razorpay = require("razorpay");
 
@@ -16,8 +17,15 @@ const PetDetails = (props) => {
   const [load, setLoad] = useState(false);
   const [details, setDetails] = useState([]);
   const [arrayImg, setArrayImg] = useState([]);
+  const [adopted, setAdopt] = useState(false);
+  const [modal, setModal] = useState(false);
+
+  const shelterId = localStorage.getItem("userInfoId");
+
+  const navigate = useNavigate();
 
   const params = useParams();
+  const userType = localStorage.getItem("userType");
 
   const loadScript = (src) => {
     return new Promise((resolve) => {
@@ -31,6 +39,59 @@ const PetDetails = (props) => {
       };
       document.body.appendChild(script);
     });
+  };
+
+  const adopt = () => {
+    setAdopt(true);
+    setModal(true);
+  };
+
+  const deletePost = () => {
+    setAdopt(false);
+    setModal(true);
+  };
+
+  const handleCancel = () => {
+    setModal(false);
+  };
+
+  const handleOk = () => {
+    setLoad(true);
+
+    if (adopted === true) {
+      axios
+        .patch(
+          `${process.env.REACT_APP_BASE_URL}/api/v1/pet_api/${params.id}/`,
+          {
+            is_adopted: true,
+          }
+        )
+        .then((res) => {
+          console.log(res.data);
+          setLoad(false);
+          setModal(false);
+          message.success("This pet has been marked adopted.");
+          navigate(`/organisation/posts/${shelterId}`);
+        })
+        .catch((e) => {
+          setLoad(false);
+          message.error("Something went wrong");
+          setModal(false);
+        });
+    } else {
+      axios
+        .delete(`${process.env.REACT_APP_BASE_URL}/api/v1/pet_api/${params.id}`)
+        .then((res) => {
+          console.log(res.data);
+          setLoad(false);
+          message.success("This pet has been deleted.");
+          navigate(`/organisation/posts/${shelterId}`);
+        })
+        .catch((e) => {
+          setLoad(false);
+          message.error("Something went wrong");
+        });
+    }
   };
 
   const handlePaymentSuccess = () => {
@@ -129,6 +190,10 @@ const PetDetails = (props) => {
     }
   };
 
+  const showUrl = () => {
+    window.location.href = "https://rzp.io/l/AC8b96kX";
+  };
+
   useEffect(() => {
     // console.log(params);
     getDetails(params);
@@ -146,6 +211,13 @@ const PetDetails = (props) => {
       ) : (
         <></>
       )}
+      <Modals
+        isModalVisible={modal}
+        handleOk={handleOk}
+        handleCancel={handleCancel}
+        body={"Are you sure?"}
+      />
+
       <div className="page_content">
         {!load && details && (
           <div className="container">
@@ -173,13 +245,20 @@ const PetDetails = (props) => {
                       {details?.state}
                     </p>
                     <br />
+                    <p>
+                      Posted On:
+                      {new Date(details?.created_at).toLocaleDateString()}
+                    </p>
+                    <br />
                     <p>Breed: {details?.breed}</p>
                     <br />
                     <p>Gender: {details?.gender}</p>
                     <br />
                     <p>Age: {details?.age}</p>
                     <br />
-                    <p>Size: {details?.size}</p>
+                    <p>Color: {details?.color}</p>
+                    <br />
+                    <p>Size: {details.size}</p>
                     <br />
                     {details?.story ? (
                       <p>
@@ -193,56 +272,105 @@ const PetDetails = (props) => {
                 </div>
                 <div className="col-lg-6 col-md-6 col-sm-12 mb-3">
                   <div className="dog-description-outline text-center">
-                    <h2>Posted By</h2>
-                    <br />
-                    <h4>{details?.animal_shelter_name}</h4>
-                    <br />
-                    <p>
-                      <i class="fa fa-map-marker pink" aria-hidden="true"></i>
-                      <br />
-                      {details?.city}, {details?.state}
-                    </p>
-                    <br />
-                    <p>
-                      <a className="details-link" href="tel:+91 9826 311996">
-                        <i class="fa fa-phone pink" aria-hidden="true"></i>
-                        {details?.phone}
-                      </a>
-                    </p>
-                    <br />
-                    <p>
-                      <a className="details-link" href="mailto:info@ngo.com">
-                        <i class="fa fa-envelope pink" aria-hidden="true"></i>
-                        info@ngo.com
-                      </a>
-                    </p>
-                    <br />
-                    <button
-                      className="theme-color-pink text-center p-2 col-12 align-items-center login-submit mb-3"
-                      onClick={() =>
-                        navigator(
-                          `/adoption-form/${details?.animalshelter}/${details?.id}`
-                        )
-                      }
-                    >
-                      Apply for adoption
-                    </button>
-                    <br />
-                    <br />
-                    <button
-                      className="theme-color-pink text-center p-2 col-12 align-items-center login-submit mb-3"
-                      onClick={() => navigator("/findpets")}
-                    >
-                      Look for other dogs
-                    </button>
-                    <br />
-                    <br />
-                    <button
-                      className="theme-color-pink text-center p-2 col-12 align-items-center login-submit mb-3"
-                      onClick={() => showRazorpay()}
-                    >
-                      Donate
-                    </button>
+                    {userType == "CUS" ? (
+                      <>
+                        <h2>Posted By</h2>
+                        <br />
+                        <h4>{details?.animal_shelter_name}</h4>
+                        <br />
+
+                        <p>
+                          <i
+                            class="fa fa-map-marker pink"
+                            aria-hidden="true"
+                          ></i>
+                          {details?.city}, {details?.state}
+                        </p>
+                        <br />
+                        <p>
+                          <a
+                            className="details-link"
+                            href="tel:+91 9826 311996"
+                          >
+                            <i class="fa fa-phone pink" aria-hidden="true"></i>
+                            {details?.contact_no}
+                          </a>
+                        </p>
+                        <br />
+                        <p>
+                          <a
+                            className="details-link"
+                            href="mailto:info@ngo.com"
+                          >
+                            <i
+                              class="fa fa-envelope pink"
+                              aria-hidden="true"
+                            ></i>
+                            {details?.user_email}{" "}
+                          </a>
+                        </p>
+                        <br />
+                        {details.is_adopted && (
+                          <p className="green">This pet has been adopted.</p>
+                        )}
+                        {!details?.is_adopted && (
+                          <button
+                            className="theme-color-pink text-center p-2 col-12 align-items-center login-submit mb-3"
+                            onClick={() =>
+                              navigator(
+                                `/adoption-form/${details?.animalshelter}/${details?.id}`
+                              )
+                            }
+                          >
+                            Apply for adoption
+                          </button>
+                        )}
+                        <br />
+                        <br />
+                        <button
+                          className="theme-color-pink text-center p-2 col-12 align-items-center login-submit mb-3"
+                          onClick={() => navigator("/findpets")}
+                        >
+                          Look for other dogs
+                        </button>
+                        <br />
+                        <br />
+                        <button
+                          className="theme-color-pink text-center p-2 col-12 align-items-center login-submit mb-3"
+                          // onClick={() => showRazorpay()
+                          onClick={() => showUrl()}
+                        >
+                          Donate
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <h2>Actions</h2>
+                        {/* <button
+                          className="theme-color-pink text-center p-2 align-items-center login-submit mb-3"
+                          type="button"
+                          // onClick={() => setEdit(true)}
+                        >
+                          Edit
+                        </button> */}
+                        {!details?.is_adopted && (
+                          <button
+                            className="theme-color-pink text-center p-2 align-items-center login-submit mb-3"
+                            type="button"
+                            onClick={() => adopt(true)}
+                          >
+                            Mark Adopted
+                          </button>
+                        )}
+                        <button
+                          className="bg-red text-center p-2 align-items-center login-submit mb-3"
+                          type="button"
+                          onClick={() => deletePost()}
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
